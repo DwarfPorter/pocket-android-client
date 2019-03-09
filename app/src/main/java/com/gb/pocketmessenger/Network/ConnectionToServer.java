@@ -1,7 +1,11 @@
 package com.gb.pocketmessenger.Network;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
+import android.os.StrictMode;
+import android.util.Log;
 
+import com.gb.pocketmessenger.db.ConnectionDB;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -16,6 +20,11 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +37,13 @@ public class ConnectionToServer extends AsyncTask<String, Void, String> {
     private String login;
     private String password;
     private String email;
+    String classs = "com.mysql.jdbc.Driver";
+    ConnectionDB connectionDB;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        connectionDB = new ConnectionDB();
     }
 
     @Override
@@ -55,24 +67,25 @@ public class ConnectionToServer extends AsyncTask<String, Void, String> {
             case "REGISTER":
                 InputStream inputstream = null;
                 try {
-                    URL url = new URL(myurl + "/v1/users/");
+                    URL url = new URL(myurl);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("POST");
                     connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                     connection.setRequestProperty("Accept", "application/json");
                     connection.setDoOutput(true);
                     connection.setDoInput(true);
-                    JSONObject auth = new JSONObject();
+                    Connection conn = connectionDB.CONN();
+                    String request = "select from auth '" + login + "' where email password = '" + password + "')";
                     try {
-                        auth.put("account_name", params[0]);
-                        auth.put("email", params[1]);
-                        auth.put("password", params[2]);
-                    } catch (Exception e) {
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(request);
+                    if (!rs.next()){
+                        String query = "insert into auth values('" + login + "', '" +email + "', '"+ password +"')";
+                        stmt.executeUpdate(query);
+                    }
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     }
-                    OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-                    wr.write(auth.toString());
-                    wr.flush();
                     connection.connect();
                     int responseCode = connection.getResponseCode();
 
