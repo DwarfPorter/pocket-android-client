@@ -13,8 +13,8 @@ import com.gb.pocketmessenger.Network.ConnectionToServer;
 import com.gb.pocketmessenger.R;
 import com.gb.pocketmessenger.models.Message;
 import com.gb.pocketmessenger.models.PocketMessage;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+//import com.google.gson.Gson;
+//import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
@@ -95,10 +95,10 @@ public class ChatMessages extends Fragment implements MessageInput.InputListener
         return true;
     }
 
-    private String getMessage(CharSequence input, String receiver) {
-        PocketMessage message = new PocketMessage(receiver, input.toString());
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        return gson.toJson(message);
-    }
+//    private String getMessage(CharSequence input, String receiver) {
+//        PocketMessage message = new PocketMessage(receiver, input.toString());
+//        GsonBuilder builder = new GsonBuilder();
+//        Gson gson = builder.create();
+//        return gson.toJson(message);
+//    }
 }

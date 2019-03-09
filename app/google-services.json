@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1011361679438",
+    "firebase_url": "https://pocket-android-client-60512.firebaseio.com",
+    "project_id": "pocket-android-client-60512",
+    "storage_bucket": "pocket-android-client-60512.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011361679438:android:6ed5bbfa84fe840e",
+        "android_client_info": {
+          "package_name": "com.gb.pocketmessenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011361679438-bvs2j1g04e2udoeu0tl4p7ngcsroabhp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gb.pocketmessenger",
+            "certificate_hash": "f96e9b00a6972b95716d54bb8dc63b5e52543cbb"
+          }
+        },
+        {
+          "client_id": "1011361679438-tqss6lof4kq74mou0706f6lheueh8uer.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCs6ToWypV1Da20SPwwghNZDatikvi6q4U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011361679438-tqss6lof4kq74mou0706f6lheueh8uer.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

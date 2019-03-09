@@ -8,6 +8,9 @@ import android.os.Bundle;
 
 import com.gb.pocketmessenger.fragments.LoginFragment;
 import com.gb.pocketmessenger.fragments.TabsFragment;
+//import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
             transaction.commit();
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
 
     //TODO:  check token
     private boolean checkingToken() {
