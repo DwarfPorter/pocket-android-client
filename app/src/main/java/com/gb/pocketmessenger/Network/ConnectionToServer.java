@@ -28,7 +28,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
-import static com.gb.pocketmessenger.fragments.ChatMessages.WSS_POCKETMSG;
+//import static com.gb.pocketmessenger.fragments.ChatMessages.WSS_POCKETMSG;
 
 
 public class ConnectionToServer extends AsyncTask<String, Void, String> {
@@ -43,7 +43,7 @@ public class ConnectionToServer extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        connectionDB = new ConnectionDB();
+//        connectionDB = new ConnectionDB();
     }
 
     @Override
@@ -126,7 +126,7 @@ public class ConnectionToServer extends AsyncTask<String, Void, String> {
             @Override
             public void run() {
                 try {
-                    chatWebSocket = new WebSocketFactory().createSocket(WSS_POCKETMSG);
+//                    chatWebSocket = new WebSocketFactory().createSocket(WSS_POCKETMSG);
                     chatWebSocket.addHeader("Token", "36a6908c783ba6e5");
                     chatWebSocket.addListener(new WebSocketAdapter() {
                         @Override
@@ -140,8 +140,6 @@ public class ConnectionToServer extends AsyncTask<String, Void, String> {
                     });
                     chatWebSocket.connect();
                 } catch (WebSocketException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

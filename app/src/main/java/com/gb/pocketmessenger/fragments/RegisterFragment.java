@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.gb.pocketmessenger.Network.ConnectionToServer;
 import com.gb.pocketmessenger.R;
 import com.gb.pocketmessenger.db.ConnectionDB;
+import com.gb.pocketmessenger.models.User;
 //import com.google.android.gms.tasks.OnCompleteListener;
 //import com.google.android.gms.tasks.Task;
 //import com.google.firebase.auth.AuthResult;
@@ -43,8 +44,10 @@ public class RegisterFragment extends Fragment {
     private EditText emailEditText;
     private Button registerButton;
     private Button cancelButton;
+    private User user;
     ConnectionDB connectionDB;
     ProgressDialog progressDialog;
+
 
     public static RegisterFragment newInstance() {
         return new RegisterFragment();
@@ -64,6 +67,7 @@ public class RegisterFragment extends Fragment {
                         passwordEditText.getText().toString()));
         connectionDB = new ConnectionDB();
         progressDialog = new ProgressDialog(getContext());
+        user = new User("1");
         return view;
     }
 
@@ -87,6 +91,14 @@ public class RegisterFragment extends Fragment {
             protected void onPreExecute() {
                 progressDialog.setMessage("Loading...");
                 progressDialog.show();
+                try {
+                Connection con = connectionDB.CONN();
+                Statement stmt = con.createStatement();
+                String create = "create table auth if not exist";
+                    stmt.execute(create);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -96,13 +108,12 @@ public class RegisterFragment extends Fragment {
                 else {
                     try {
                         Connection con = connectionDB.CONN();
+                        Statement stmt = con.createStatement();
                         if (con == null) {
                             z = "Please check your internet connection";
                         } else {
-
                             String request = "select * from auth where login = '" + login + "'";
                             try {
-                                Statement stmt = con.createStatement();
                                 ResultSet rs = stmt.executeQuery(request);
                                 if (!rs.next()){
                                     String query = "insert into auth values('" + login + "', '" +email + "', '"+ password +"')";
@@ -137,15 +148,19 @@ public class RegisterFragment extends Fragment {
             protected void onPostExecute(String s) {
                 progressDialog.hide();
                 if (isSuccess){
-                    loadChatMessagesFragment();
+                    loadChatMessagesFragment(login);
                 }
             }
         }
 
-    private void loadChatMessagesFragment() {
+    private void loadChatMessagesFragment(String login) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Bundle arguments = new Bundle();
+        arguments.putString("USERNAME", login);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.login_container, new ChatMessages());
+        ChatMessages chatMessages = new ChatMessages();
+        chatMessages.setArguments(arguments);
+        transaction.replace(R.id.login_container, chatMessages);
         transaction.commit();
     }
     }

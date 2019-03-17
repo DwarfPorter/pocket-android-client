@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.gb.pocketmessenger.R;
 import com.gb.pocketmessenger.db.ConnectionDB;
+import com.gb.pocketmessenger.models.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,6 +23,7 @@ import java.sql.Statement;
 
 public class LoginFragment extends Fragment {
     TextView login, password;
+    User user = new User("1");
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -44,10 +46,14 @@ public class LoginFragment extends Fragment {
     }
 
     //TODO REFACTOR
-    private void loadChatMessagesFragment() {
+    private void loadChatMessagesFragment(String login) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Bundle arguments = new Bundle();
+        arguments.putString("USERNAME", login);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.login_container, new ChatMessages());
+        ChatMessages chatMessages = new ChatMessages();
+        chatMessages.setArguments(arguments);
+        transaction.replace(R.id.login_container, chatMessages);
         transaction.commit();
     }
 
@@ -77,6 +83,14 @@ public class LoginFragment extends Fragment {
             progressDialog.setMessage("Loading...");
             progressDialog.show();
             super.onPreExecute();
+            try {
+                Connection con = connectionDB.CONN();
+                Statement stmt = con.createStatement();
+                String create = "create table auth if not exist";
+                stmt.execute(create);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -89,7 +103,6 @@ public class LoginFragment extends Fragment {
                     if (con == null) {
                         z = "Please check your internet connection";
                     } else {
-
                         String request = "select * from auth where login = '" + login + "' and password = '" + password + "'";
                         try {
                             Statement stmt = con.createStatement();
@@ -125,7 +138,7 @@ public class LoginFragment extends Fragment {
         protected void onPostExecute(String s) {
             progressDialog.hide();
             if (isSuccess){
-                loadChatMessagesFragment();
+                loadChatMessagesFragment(login);
             }
         }
     }
