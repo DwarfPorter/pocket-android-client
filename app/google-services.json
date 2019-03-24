@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "1011361679438",
-    "firebase_url": "https://pocket-android-client-60512.firebaseio.com",
-    "project_id": "pocket-android-client-60512",
-    "storage_bucket": "pocket-android-client-60512.appspot.com"
+    "project_number": "34514708252",
+    "firebase_url": "https://pocketmessager.firebaseio.com",
+    "project_id": "pocketmessager",
+    "storage_bucket": "pocketmessager.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1011361679438:android:6ed5bbfa84fe840e",
+        "mobilesdk_app_id": "1:34514708252:android:6ed5bbfa84fe840e",
         "android_client_info": {
           "package_name": "com.gb.pocketmessenger"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1011361679438-bvs2j1g04e2udoeu0tl4p7ngcsroabhp.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.gb.pocketmessenger",
-            "certificate_hash": "f96e9b00a6972b95716d54bb8dc63b5e52543cbb"
-          }
-        },
-        {
-          "client_id": "1011361679438-tqss6lof4kq74mou0706f6lheueh8uer.apps.googleusercontent.com",
+          "client_id": "34514708252-msp01p6vmigghaugonn4fmeei4b3idkn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCs6ToWypV1Da20SPwwghNZDatikvi6q4U"
+          "current_key": "AIzaSyB8VTuSS_JyEQezEWraqvExOUUz2l0yzl8"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1011361679438-tqss6lof4kq74mou0706f6lheueh8uer.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

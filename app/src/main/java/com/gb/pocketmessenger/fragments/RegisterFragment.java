@@ -1,13 +1,13 @@
 package com.gb.pocketmessenger.fragments;
 
-
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,28 +15,28 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.gb.pocketmessenger.Network.ConnectionToServer;
 import com.gb.pocketmessenger.R;
-import com.gb.pocketmessenger.db.ConnectionDB;
 import com.gb.pocketmessenger.models.User;
-//import com.google.android.gms.tasks.OnCompleteListener;
-//import com.google.android.gms.tasks.Task;
-//import com.google.firebase.auth.AuthResult;
-//import com.google.firebase.auth.FirebaseAuth;
-//import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import javax.sql.DataSource;
+import java.util.Set;
 
 public class RegisterFragment extends Fragment {
     private EditText loginEditext;
@@ -44,9 +44,15 @@ public class RegisterFragment extends Fragment {
     private EditText emailEditText;
     private Button registerButton;
     private Button cancelButton;
-    private User user;
-    ConnectionDB connectionDB;
-    ProgressDialog progressDialog;
+    private FirebaseAuth mAuth;
+    private TextView answer;
+    Map<String, String> users = new HashMap<>();
+    private FirebaseAuth.AuthStateListener mListener;
+    final String TAG = "registerTAG";
+    private DatabaseReference databaseReference;
+    String loginN;
+    DatabaseReference parent;
+//    List<String> users = new ArrayList<>();
 
 
     public static RegisterFragment newInstance() {
@@ -62,105 +68,127 @@ public class RegisterFragment extends Fragment {
         emailEditText = view.findViewById(R.id.email_edittext);
         registerButton = view.findViewById(R.id.register_ok_button);
         cancelButton = view.findViewById(R.id.register_cancel_button);
+        answer = view.findViewById(R.id.server_response);
         registerButton.setOnClickListener(v ->
                 sendRegisterData(loginEditext.getText().toString(), emailEditText.getText().toString(),
                         passwordEditText.getText().toString()));
-        connectionDB = new ConnectionDB();
-        progressDialog = new ProgressDialog(getContext());
-        user = new User("1");
         return view;
     }
 
-    private void sendRegisterData(String login, String email, String password) {
-        Doregister doregister = new Doregister(login, email, password);
-        doregister.execute("");
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+        checkAuthState();
+        parent = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                getUsersFromDB(dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-        public class Doregister extends AsyncTask<String, String, String> {
-        String login, email, password;
-
-            public Doregister(String login, String email, String password) {
-                this.login = login;
-                this.email = email;
-                this.password = password;
-            }
-            String z = "";
-            boolean isSuccess = false;
-
+    public void checkAuthState(){
+        mListener = new FirebaseAuth.AuthStateListener(){
             @Override
-            protected void onPreExecute() {
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
-                try {
-                Connection con = connectionDB.CONN();
-                Statement stmt = con.createStatement();
-                String create = "create table auth if not exist";
-                    stmt.execute(create);
-                } catch (SQLException e) {
-                    e.printStackTrace();
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser() != null){
+
                 }
             }
+        };
+    }
 
-            @Override
-            protected String doInBackground(String... params) {
-                if (login.trim().equals("") || email.trim().equals("") || password.trim().equals(""))
-                    z = "Please enter all fields....";
-                else {
-                    try {
-                        Connection con = connectionDB.CONN();
-                        Statement stmt = con.createStatement();
-                        if (con == null) {
-                            z = "Please check your internet connection";
-                        } else {
-                            String request = "select * from auth where login = '" + login + "'";
-                            try {
-                                ResultSet rs = stmt.executeQuery(request);
-                                if (!rs.next()){
-                                    String query = "insert into auth values('" + login + "', '" +email + "', '"+ password +"')";
-                                    stmt.executeUpdate(query);
-                                    z = "Register successfull";
-                                    isSuccess = true;
-                                } else {
-                                    z = "Register failed. User exists";
-                                    isSuccess = false;
-                                }
-                            } catch (SQLException e) {
-                                e.printStackTrace();
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mListener);
+    }
 
-                            }
+    private void sendRegisterData(String login, String email, String password) {
+
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+            answer.setText("Fields are empty");
+        } else {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    answer.setText("Sign up success");
+                    addUserToDB(login, email);
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, e.getMessage());
+                            answer.setText(e.getMessage());
                         }
-                    } catch (Exception ex) {
-                        isSuccess = false;
-                        z = "Exceptions" + ex;
-                    }
-                }
-                progressDialog.setMessage(z);
-                progressDialog.show();
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return z;
-            }
+                    });
+        }
+    }
 
+    private void addUserToDB(String login, String email) {
+        users.put(login, email);
+        databaseReference.child(login).setValue(users, new DatabaseReference.CompletionListener() {
             @Override
-            protected void onPostExecute(String s) {
-                progressDialog.hide();
-                if (isSuccess){
-                    loadChatMessagesFragment(login);
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                loginN = login;
+                if (users.size() > 1){
+                    loadChatListFragment(users, email, login);
+                } else {
+                    answer.setText("No one chats");
+                }
+            }
+        });
+    }
+
+    public void getUsersFromDB(DataSnapshot dataSnapshot){
+        for (DataSnapshot ds : dataSnapshot.getChildren()){
+            if (users != null){
+                if (users.size() == 0){
+                    users.put(ds.getKey(), (String) ds.getValue());
+                }else {
+                    if (!users.containsKey(ds.getKey())){
+                        users.put(ds.getKey(), (String) ds.getValue());
+                        Log.d(TAG, (String) ds.getValue());
+                    }
                 }
             }
         }
+    }
 
-    private void loadChatMessagesFragment(String login) {
+    private void loadChatListFragment(Map<String,String> users, String email, String login){
+        users.remove(login);
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Bundle arguments = new Bundle();
-        arguments.putString("USERNAME", login);
+        arguments.putString("from", login);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        ChatMessages chatMessages = new ChatMessages();
-        chatMessages.setArguments(arguments);
-        transaction.replace(R.id.login_container, chatMessages);
+        ChatList chatList = new ChatList();
+        chatList.setArguments(arguments);
+        transaction.replace(R.id.login_container, chatList);
         transaction.commit();
     }
+
     }

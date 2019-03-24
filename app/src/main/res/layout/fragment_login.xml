@@ -12,12 +12,13 @@
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="511dp"
-        android:layout_marginBottom="40sp"
         android:layout_marginLeft="20sp"
         android:layout_marginRight="20sp"
+        android:layout_marginBottom="40sp"
         android:src="@drawable/bg_white_rec"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
@@ -105,6 +106,19 @@
         android:text="@string/button_register"
         app:layout_constraintEnd_toEndOf="@+id/password_et"
         app:layout_constraintTop_toBottomOf="@+id/password_et" />
+
+    <TextView
+        android:id="@+id/exception"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Ошибка"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toStartOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/button_register" />
 
 
 </android.support.constraint.ConstraintLayout>

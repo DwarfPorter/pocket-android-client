@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ChatList">
 
-    <com.stfalcon.chatkit.dialogs.DialogsList
-        android:id="@+id/chatList"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
